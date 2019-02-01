@@ -21,14 +21,16 @@ class PhpJasperReport
     public $routeJrxml;
     public $output;
     public $dbConnection;
+    public $outputDirFile;
 
     function __construct($dbConnection=array(), $dirJrxml='', $output, $formats=array())
     {
-        $this->dir          = __DIR__;
-        $this->routeJrxml   = $this->dir.$dirJrxml;
-        $this->output       = $output;
-        $this->dbConnection = $dbConnection;        
-        $this->formats      = $formats;
+        $this->dir           = __DIR__;
+        $this->routeJrxml    = $this->dir.$dirJrxml;
+        $this->output        = $output;
+        $this->dbConnection  = $dbConnection;        
+        $this->formats       = $formats;
+        $this->outputDirFile = '';
     }
 
     /**
@@ -38,10 +40,12 @@ class PhpJasperReport
      * @param  array  $formats   [formatos que generaran el jasper report Ejm. pdf,xls, ... etc  ]
      * @return [string]          [retorna el nombre del archivo con la ruta localizando los reportes]
      */
-    function run($nameJrxml, $params=array(), $formats=array())
+    public function run($nameJrxml, $params=array(), $formats=array())
     {
-        $output = '';
-        $onlyOneExtencion = '';
+        $this->outputDirFile = '';
+        $output              = '';
+        $onlyOneExtencion    = '';
+        
         $this->formats = ( empty($formats) )? $this->formats: $formats;
         
         if( $this->verifyData())
@@ -81,9 +85,20 @@ class PhpJasperReport
             }
 
         }
-        
+        $this->outputDirFile = $output.$onlyOneExtencion;
+
         return $output.$onlyOneExtencion;
 
+    }
+
+    public function runPdf($nameJrxml, $params=array())
+    {
+        return $this->run($nameJrxml, $params, ['pdf']);
+    }
+
+    public function runExcel($nameJrxml, $params=array())
+    {
+        return $this->run($nameJrxml, $params, ['xls']);
     }
 
     private function verifyData()
@@ -120,6 +135,16 @@ class PhpJasperReport
         header("Content-Type: application/force-download"); 
         header('Content-Disposition: attachment; filename="'.$filename.'"'); 
         readfile($file);
+    }
+
+    public function removeFile($dirFile='')
+    {
+        if($dirFile!='')
+        {
+            unlink($dirFile);
+        } else{
+            unlink($this->outputDirFile);
+        }
     }
 }
 
