@@ -6,7 +6,7 @@ $dbConnection = array('driver' => 'postgres',
                 'username' => 'postgres',
                 'password' => 'postgres',
                 'host' => 'localhost',
-                'database' => 'nombrebasededatos',
+                'database' => 'phpjasperreport',
                 'port' => '5432');
 
 $jasper = new PhpJasperReport($dbConnection, '/jrxml_store/', '/reports');
